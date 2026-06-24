@@ -240,23 +240,43 @@ export default function ProjectGrid() {
 
       {/* Modal Detail Overlay */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/90 backdrop-blur-md transition-opacity duration-300">
-          <div className="glass max-w-3xl w-full rounded-3xl overflow-hidden border border-white/10 flex flex-col max-h-[90vh] shadow-2xl relative animate-float">
-            {/* Modal Image & Gallery */}
-            <div className="aspect-video relative w-full min-h-[220px] sm:min-h-[320px] bg-brand-dark flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-brand-dark/95 backdrop-blur-lg"
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedProject(null); }}
+        >
+          {/* Modal container: full-screen on mobile, capped on desktop */}
+          <div className="glass w-full sm:max-w-4xl sm:w-[94vw] sm:rounded-3xl rounded-t-3xl overflow-hidden border border-white/10 flex flex-col shadow-2xl relative"
+            style={{ maxHeight: "calc(100dvh - 0px)", height: "100dvh" }}
+          >
+
+            {/* ── Sticky header bar with close ── */}
+            <div className="flex items-center justify-between px-5 py-3 bg-[#07070a]/90 border-b border-white/10 flex-shrink-0 sm:hidden">
+              <span className="font-syne font-bold text-sm text-white truncate pr-4">{selectedProject.title}</span>
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex-shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* ── Main image area (very tall) ── */}
+            <div className="relative w-full bg-black flex-shrink-0"
+              style={{ height: "55dvh", minHeight: "260px" }}
+            >
               <Image
                 src={selectedProject.gallery ? selectedProject.gallery[activeImageIndex] : selectedProject.image}
                 alt={`${selectedProject.title} view ${activeImageIndex + 1}`}
                 fill
                 priority
-                className="object-contain sm:object-cover transition-all duration-300"
+                className="object-contain transition-all duration-300"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/20 pointer-events-none" />
-              
-              {/* Close Button */}
+
+              {/* Close Button — desktop only */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark text-white border border-white/10 hover:border-white/20 transition-colors cursor-pointer z-10"
+                className="hidden sm:flex absolute top-4 right-4 p-2.5 rounded-full bg-brand-dark/80 hover:bg-brand-dark text-white border border-white/10 hover:border-white/30 transition-colors cursor-pointer z-10 items-center justify-center"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -267,83 +287,80 @@ export default function ProjectGrid() {
                 <>
                   <button
                     onClick={() => setActiveImageIndex((prev) => (prev === 0 ? selectedProject.gallery!.length - 1 : prev - 1))}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/10 hover:border-white/25 transition-all cursor-pointer z-10 hover:scale-105"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/15 hover:border-white/30 transition-all cursor-pointer z-10 hover:scale-105 active:scale-95"
                     aria-label="Previous image"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-6 h-6" />
                   </button>
                   <button
                     onClick={() => setActiveImageIndex((prev) => (prev === selectedProject.gallery!.length - 1 ? 0 : prev + 1))}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/10 hover:border-white/25 transition-all cursor-pointer z-10 hover:scale-105"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/15 hover:border-white/30 transition-all cursor-pointer z-10 hover:scale-105 active:scale-95"
                     aria-label="Next image"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-6 h-6" />
                   </button>
 
-                  {/* Slide number counter */}
-                  <span className="absolute bottom-4 left-4 px-3 py-1 rounded-full text-[10px] font-mono bg-brand-dark/85 text-white border border-white/5">
+                  {/* Slide counter */}
+                  <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-mono bg-brand-dark/85 text-white border border-white/10">
                     {activeImageIndex + 1} / {selectedProject.gallery.length}
                   </span>
                 </>
               )}
             </div>
 
-            {/* Gallery Thumbnails List (if gallery exists) */}
+            {/* ── Thumbnail strip ── */}
             {selectedProject.gallery && selectedProject.gallery.length > 1 && (
-              <div className="flex gap-2 px-6 pt-4 overflow-x-auto scrollbar-none select-none max-w-full bg-[#07070a] border-b border-white/5 pb-3">
+              <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none select-none bg-[#07070a] border-b border-white/5 flex-shrink-0">
                 {selectedProject.gallery.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`relative w-16 h-10 flex-shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer ${
+                    className={`relative flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
                       activeImageIndex === idx
-                        ? "border-brand-cyan scale-95 shadow-md shadow-brand-cyan/20"
+                        ? "border-brand-cyan shadow-md shadow-brand-cyan/20 scale-95"
                         : "border-white/10 hover:border-white/30"
                     }`}
+                    style={{ width: 64, height: 42 }}
                   >
-                    <Image
-                      src={img}
-                      alt={`thumbnail ${idx}`}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={img} alt={`thumb ${idx + 1}`} fill className="object-cover" />
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Modal Info (Scrollable content) */}
-            <div className="p-6 md:p-8 overflow-y-auto flex-1">
-              <div className="flex flex-wrap items-center gap-2 mb-4">
+            {/* ── Scrollable info ── */}
+            <div className="flex-1 overflow-y-auto overscroll-contain p-5 md:p-8">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan">
                   {getIconForCategory(selectedProject.category)}
                   {selectedProject.category}
                 </span>
                 <span className="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                  Client: {selectedProject.client}
+                  {selectedProject.client}
                 </span>
                 <span className="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5">
                   {selectedProject.date}
                 </span>
               </div>
 
-              <h3 className="font-syne font-bold text-2xl md:text-3.5xl text-white mb-4">
+              {/* Title hidden on mobile (shown in sticky header) */}
+              <h3 className="hidden sm:block font-syne font-bold text-2xl md:text-3xl text-white mb-3">
                 {selectedProject.title}
               </h3>
 
-              <div className="border-t border-white/10 my-4" />
+              <div className="border-t border-white/10 my-3" />
 
-              <h4 className="font-syne font-bold text-sm text-gray-300 uppercase tracking-widest mb-2">
+              <h4 className="font-syne font-bold text-xs text-gray-300 uppercase tracking-widest mb-2">
                 Project Journey
               </h4>
-              <p className="font-jakarta text-gray-400 text-sm leading-relaxed mb-6">
+              <p className="font-jakarta text-gray-400 text-sm leading-relaxed mb-5">
                 {selectedProject.story}
               </p>
 
-              <h4 className="font-syne font-bold text-sm text-gray-300 uppercase tracking-widest mb-2.5">
+              <h4 className="font-syne font-bold text-xs text-gray-300 uppercase tracking-widest mb-2">
                 Technical Blueprint
               </h4>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 pb-4">
                 {selectedProject.stack.map((item) => (
                   <span
                     key={item}
