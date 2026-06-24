@@ -15,24 +15,27 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Kaelen Voss | Visual Artist, Animator & Vibe Coder",
-  description: "Portfolio of Kaelen Voss, a multidisciplinary designer, 3D animator, motion graphic artist, and vibe coder crafting immersive digital experiences and music visualizers.",
+  title: "Steven Ebuka Anyadike | Creative Director, Brand Designer & Web Developer",
+  description: "Portfolio of Steven Ebuka Anyadike, a Creative Director, Brand Designer, UI/UX Designer, and AI-assisted Web Developer building premium digital and brand experiences.",
   keywords: [
-    "Kaelen Voss",
+    "Steven Ebuka Anyadike",
+    "Steven Anyadike",
+    "Creative Director",
+    "Brand Designer",
+    "UI/UX Designer",
+    "AI-Assisted Web Developer",
     "Portfolio",
-    "Graphic Design",
-    "Motion Graphics",
-    "3D Animation",
-    "Vibe Coding",
-    "Creative Coding",
-    "Album Cover Art",
-    "Music Visualizer",
-    "Freelancer"
+    "Brand Identity",
+    "Web Development",
+    "Figma",
+    "Blender",
+    "CapCut",
+    "Crova Ltd"
   ],
-  authors: [{ name: "Kaelen Voss" }],
+  authors: [{ name: "Steven Ebuka Anyadike" }],
   openGraph: {
-    title: "Kaelen Voss | Visual Artist & Vibe Coder",
-    description: "Multidisciplinary portfolio showcasing 3D renders, kinetic motion graphics, generative canvas coding, and cover art visualizers.",
+    title: "Steven Ebuka Anyadike | Creative Director, Brand Designer & Web Developer",
+    description: "Portfolio of Steven Ebuka Anyadike, creative director and developer, showcasing brand designs, UI/UX platforms, and high-quality web applications.",
     type: "website",
     locale: "en_US",
   },

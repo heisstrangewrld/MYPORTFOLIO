@@ -38,10 +38,10 @@ export default function Header() {
         {/* Logo */}
         <a href="#" className="flex items-center gap-2 group">
           <span className="font-syne font-bold text-xl md:text-2xl tracking-tighter text-white">
-            KV<span className="text-gradient">.</span>
+            SA<span className="text-gradient">.</span>
           </span>
           <span className="hidden sm:inline font-jakarta text-xs text-gray-400 tracking-widest uppercase transition-all duration-300 group-hover:text-brand-cyan">
-            Vibe Architect
+            Creative Director & Developer
           </span>
         </a>
 
