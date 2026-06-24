@@ -6,7 +6,7 @@ import Header from "./components/Header";
 import CanvasVibeBackground from "./components/CanvasVibeBackground";
 import ProjectGrid from "./components/ProjectGrid";
 import VibeLab from "./components/VibeLab";
-import { Sparkles, Code2, Music, Palette, Send, ArrowRight, Layers } from "lucide-react";
+import { Sparkles, Code2, Palette, Send, ArrowRight, Layers } from "lucide-react";
 
 export default function Home() {
   const [formState, setFormState] = useState({

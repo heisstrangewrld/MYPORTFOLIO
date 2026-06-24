@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X, Sparkles, Code2, Play, Eye, Palette, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Sparkles, Code2, Eye, Palette, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Project {
   id: string;
