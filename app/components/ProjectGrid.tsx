@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X, Sparkles, Code2, Play, Eye } from "lucide-react";
+import { X, Sparkles, Code2, Play, Eye, Palette, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Project {
   id: string;
   title: string;
-  category: "3D & Motion" | "Cover Art" | "Music Visualizer" | "Vibe Coding";
+  category: "Creative Direction" | "Brand Design" | "Cover Art" | "Web Development";
   image: string;
+  gallery?: string[];
   description: string;
   stack: string[];
   story: string;
@@ -18,58 +19,73 @@ interface Project {
 
 const projects: Project[] = [
   {
-    id: "vibe-fields",
-    title: "Astral Flow Fields v3.1",
-    category: "Vibe Coding",
-    image: "/portfolio_vibe_code.png",
-    description: "An interactive math-driven fluid flow field explorer rendering complex vector math real-time on GPU.",
-    stack: ["WebGL", "HTML5 Canvas", "React", "GLSL Shaders"],
-    story: "Built as a live web showcase, this project maps mathematical vector flow fields (using custom simplex noise arrays) to millions of glowing paint particles. Users can adjust control parameters like particle lifespan, speed, color gradients, and turbulence overlays. The custom WebGL rendering engine keeps frame rates at a locked 60 FPS even on mobile browsers.",
-    client: "Personal Showcase",
-    date: "June 2026",
+    id: "crova-delivery",
+    title: "Crova Food Delivery Platform",
+    category: "Creative Direction",
+    image: "/CROVA WEBP IMAGES/mock up 2.webp",
+    gallery: [
+      "/CROVA WEBP IMAGES/mock up 2.webp",
+      "/CROVA WEBP IMAGES/Artboard 1.webp",
+      "/CROVA WEBP IMAGES/LOGO 4.webp",
+      "/CROVA WEBP IMAGES/mockup 1.webp",
+      "/CROVA WEBP IMAGES/cap mockup 1.webp",
+      "/CROVA WEBP IMAGES/shirt mockup 1.webp",
+      "/CROVA WEBP IMAGES/shirt mockup 6.webp",
+      "/CROVA WEBP IMAGES/watch mockup 1.webp",
+      "/CROVA WEBP IMAGES/AMALA.webp",
+      "/CROVA WEBP IMAGES/PIZZA.webp",
+      "/CROVA WEBP IMAGES/bole and turkey.webp",
+      "/CROVA WEBP IMAGES/GOLD PLATTER.webp",
+    ],
+    description: "Creative direction, brand identity, and mobile app design systems for a next-gen food delivery ecosystem.",
+    stack: ["Figma", "Adobe Illustrator", "Brand Strategy", "UI/UX Design"],
+    story: "As Creative Director & COO of Crova Ltd, I led the brand identity development, packaging designs, merchandise, and mobile app UI/UX workflows. The system is designed to connect customers with premium cuisines through a vibrant, high-fidelity user interface. I created custom brand sheets, packaging concepts, and high-fidelity prototypes to establish a cohesive cross-channel brand presence.",
+    client: "Crova Ltd",
+    date: "Jan 2026 – Jun 2026",
   },
   {
-    id: "fluid-sculpture",
-    title: "Fluid Chrome Core 01",
-    category: "3D & Motion",
+    id: "colors-beverages",
+    title: "Colors Beverages Brand Identity",
+    category: "Brand Design",
     image: "/portfolio_3d_render.png",
-    description: "A premium ray-traced abstract 3D sculpture study featuring organic refraction and metallic liquid core physics.",
-    stack: ["Blender", "Octane Render", "Simulation Nodes", "Photoshop"],
-    story: "This artwork is a visual exploration of glass refractivity and liquid metal behaviors under high pressure. Simulated with Blender's fluid nodes, the sculpture undergoes organic twisting loops. The final image was ray-traced in Octane using a custom spectral dispersion glass shader to separate light rays, producing the rainbow chromatics seen in the glows.",
-    client: "Design Lab Studio",
-    date: "May 2026",
+    description: "Premium visual identity, structural packaging layouts, and 3D product renders.",
+    stack: ["Blender", "Photoshop", "Illustrator", "Product Design"],
+    story: "Designed a clean and modern brand identity system for Colors Beverages (Ireland). The creative package features custom structural packaging design layout guides and high-fidelity 3D CGI product renders that convey an energetic, premium retail presence.",
+    client: "Colors Beverages",
+    date: "Jun – Jul 2024",
   },
   {
-    id: "aether-cover",
-    title: "Aether Vibes LP Cover",
+    id: "takeover-cover",
+    title: "Takeover – Vuga KVNGZ LP",
     category: "Cover Art",
     image: "/portfolio_cover_art.png",
-    description: "Surreal cyberpunk album art commission featuring levitating neon geometries for a synthwave producer.",
-    stack: ["Cinema4D", "Octane Render", "Adobe Photoshop"],
-    story: "Commissioned by electronic music artist heisstrangewrld for their album 'Aether Vibes', this cover design features floating geometric nodes that represent a physical interpretation of synthetic audio wave resonance. Glowing neon magenta wireframes map across the chrome structure, floating against a hyper-detailed deep space nebula background.",
-    client: "heisstrangewrld",
-    date: "April 2026",
+    description: "Surreal geometric album cover art that gained massive international music scene traction.",
+    stack: ["Cinema4D", "Octane Render", "Photoshop", "Digital Art"],
+    story: "Commissioned to design the official album art for 'Takeover' by Vuga KVNGZ. Featuring levitating neon structures and spectral reflections, the design stood out globally, establishing deep resonance in music communities and gaining viral traction in Turkey.",
+    client: "Vuga KVNGZ",
+    date: "2024",
   },
   {
-    id: "bass-reactor",
-    title: "Live Show Bass Reactor v2",
-    category: "Music Visualizer",
-    image: "/portfolio_music_viz.png",
-    description: "Real-time sound-reactive stage visualizer mapping audio spectrums directly to terrain mesh deformation.",
-    stack: ["Resolume Arena", "GLSL Shaders", "After Effects", "WebAudio API"],
-    story: "Designed as a live backdrop visualizer for festival stages, this system feeds a stereophonic audio spectrum analyser into a GLSL shader. Low frequencies (bass) deform the grid-based wireframe landscape, while high-frequency percussion controls particle bursts and neon strobe pulses, forming a completely synchronized sensory experience.",
-    client: "Lumina Festivals",
-    date: "March 2026",
+    id: "fluxfunded-web",
+    title: "Fluxfunded.com & Web Ecosystems",
+    category: "Web Development",
+    image: "/portfolio_vibe_code.png",
+    description: "High-performance responsive frontend development and interactive styling for financial platforms.",
+    stack: ["Next.js", "React", "Tailwind CSS", "GitHub", "Vercel"],
+    story: "Built clean frontend systems for high-traffic financial platforms like Fluxfunded.com, Cresthood.com, Coinpek.com, Fxcntrl.com, and Risinghood.com. Developed modular, responsive layouts optimized for page speed, client trust, and clear UX routing.",
+    client: "Fluxfunded / Various",
+    date: "2016 – Present",
   },
 ];
 
-type CategoryFilter = "All" | "3D & Motion" | "Cover Art" | "Music Visualizer" | "Vibe Coding";
+type CategoryFilter = "All" | "Creative Direction" | "Brand Design" | "Cover Art" | "Web Development";
 
 export default function ProjectGrid() {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
-  const categories: CategoryFilter[] = ["All", "3D & Motion", "Cover Art", "Music Visualizer", "Vibe Coding"];
+  const categories: CategoryFilter[] = ["All", "Creative Direction", "Brand Design", "Cover Art", "Web Development"];
 
   const filteredProjects = activeFilter === "All"
     ? projects
@@ -77,11 +93,17 @@ export default function ProjectGrid() {
 
   const getIconForCategory = (category: string) => {
     switch (category) {
-      case "Vibe Coding": return <Code2 className="w-4 h-4 text-brand-cyan" />;
-      case "3D & Motion": return <Sparkles className="w-4 h-4 text-brand-pink" />;
-      case "Music Visualizer": return <Play className="w-4 h-4 text-brand-purple" />;
+      case "Creative Direction": return <Sparkles className="w-4 h-4 text-brand-pink" />;
+      case "Brand Design": return <Palette className="w-4 h-4 text-brand-cyan" />;
+      case "Cover Art": return <Eye className="w-4 h-4 text-brand-cyan" />;
+      case "Web Development": return <Code2 className="w-4 h-4 text-brand-purple" />;
       default: return <Eye className="w-4 h-4 text-brand-cyan" />;
     }
+  };
+
+  const handleSelectProject = (project: Project) => {
+    setSelectedProject(project);
+    setActiveImageIndex(0);
   };
 
   return (
@@ -121,7 +143,7 @@ export default function ProjectGrid() {
         {filteredProjects.map((project) => (
           <div
             key={project.id}
-            onClick={() => setSelectedProject(project)}
+            onClick={() => handleSelectProject(project)}
             className="group relative cursor-pointer glass rounded-2xl overflow-hidden border border-white/5 hover:border-brand-purple/30 transition-all duration-500 hover:neon-glow-purple flex flex-col h-full"
           >
             {/* Image Container */}
@@ -176,23 +198,75 @@ export default function ProjectGrid() {
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/90 backdrop-blur-md transition-opacity duration-300">
           <div className="glass max-w-3xl w-full rounded-3xl overflow-hidden border border-white/10 flex flex-col max-h-[90vh] shadow-2xl relative animate-float">
-            {/* Modal Image */}
-            <div className="aspect-video relative w-full min-h-[220px] sm:min-h-[300px]">
+            {/* Modal Image & Gallery */}
+            <div className="aspect-video relative w-full min-h-[220px] sm:min-h-[320px] bg-brand-dark flex items-center justify-center">
               <Image
-                src={selectedProject.image}
-                alt={selectedProject.title}
+                src={selectedProject.gallery ? selectedProject.gallery[activeImageIndex] : selectedProject.image}
+                alt={`${selectedProject.title} view ${activeImageIndex + 1}`}
                 fill
-                className="object-cover"
+                priority
+                className="object-contain sm:object-cover transition-all duration-300"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/20 pointer-events-none" />
+              
+              {/* Close Button */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark text-white border border-white/10 hover:border-white/20 transition-colors cursor-pointer"
+                className="absolute top-4 right-4 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark text-white border border-white/10 hover:border-white/20 transition-colors cursor-pointer z-10"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
+
+              {/* Navigation Arrows */}
+              {selectedProject.gallery && selectedProject.gallery.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setActiveImageIndex((prev) => (prev === 0 ? selectedProject.gallery!.length - 1 : prev - 1))}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/10 hover:border-white/25 transition-all cursor-pointer z-10 hover:scale-105"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setActiveImageIndex((prev) => (prev === selectedProject.gallery!.length - 1 ? 0 : prev + 1))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/10 hover:border-white/25 transition-all cursor-pointer z-10 hover:scale-105"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+
+                  {/* Slide number counter */}
+                  <span className="absolute bottom-4 left-4 px-3 py-1 rounded-full text-[10px] font-mono bg-brand-dark/85 text-white border border-white/5">
+                    {activeImageIndex + 1} / {selectedProject.gallery.length}
+                  </span>
+                </>
+              )}
             </div>
+
+            {/* Gallery Thumbnails List (if gallery exists) */}
+            {selectedProject.gallery && selectedProject.gallery.length > 1 && (
+              <div className="flex gap-2 px-6 pt-4 overflow-x-auto scrollbar-none select-none max-w-full bg-[#07070a] border-b border-white/5 pb-3">
+                {selectedProject.gallery.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative w-16 h-10 flex-shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer ${
+                      activeImageIndex === idx
+                        ? "border-brand-cyan scale-95 shadow-md shadow-brand-cyan/20"
+                        : "border-white/10 hover:border-white/30"
+                    }`}
+                  >
+                    <Image
+                      src={img}
+                      alt={`thumbnail ${idx}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Modal Info (Scrollable content) */}
             <div className="p-6 md:p-8 overflow-y-auto flex-1">
