@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { X, Sparkles, Code2, Eye, Palette, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -128,6 +128,12 @@ export default function ProjectGrid() {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+  const [slideDir, setSlideDir] = useState<"left" | "right">("left");
+
+  // Touch tracking refs for swipe gestures
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const isDragging = useRef<boolean>(false);
 
   const categories: CategoryFilter[] = ["All", "Creative Direction", "Brand Design", "Cover Art", "Web Development"];
 
@@ -145,9 +151,41 @@ export default function ProjectGrid() {
     }
   };
 
+  const goNext = () => {
+    if (!selectedProject?.gallery) return;
+    setSlideDir("left");
+    setActiveImageIndex((prev) => (prev === selectedProject.gallery!.length - 1 ? 0 : prev + 1));
+  };
+
+  const goPrev = () => {
+    if (!selectedProject?.gallery) return;
+    setSlideDir("right");
+    setActiveImageIndex((prev) => (prev === 0 ? selectedProject.gallery!.length - 1 : prev - 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+    touchStartY.current = e.changedTouches[0].clientY;
+    isDragging.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const dx = Math.abs(e.changedTouches[0].clientX - touchStartX.current);
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    if (dx > dy && dx > 8) isDragging.current = true;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!selectedProject?.gallery || selectedProject.gallery.length <= 1) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (!isDragging.current || Math.abs(dx) < 40) return;
+    if (dx < 0) goNext(); else goPrev();
+  };
+
   const handleSelectProject = (project: Project) => {
     setSelectedProject(project);
     setActiveImageIndex(0);
+    setSlideDir("left");
   };
 
   return (
@@ -240,139 +278,156 @@ export default function ProjectGrid() {
 
       {/* Modal Detail Overlay */}
       {selectedProject && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-brand-dark/95 backdrop-blur-lg"
-          onClick={(e) => { if (e.target === e.currentTarget) setSelectedProject(null); }}
-        >
-          {/* Modal container: full-screen on mobile, capped on desktop */}
-          <div className="glass w-full sm:max-w-4xl sm:w-[94vw] sm:rounded-3xl rounded-t-3xl overflow-hidden border border-white/10 flex flex-col shadow-2xl relative"
-            style={{ maxHeight: "calc(100dvh - 0px)", height: "100dvh" }}
+        <>
+          {/* CSS keyframes for slide animations — injected inline */}
+          <style>{`
+            @keyframes slideInFromRight { from { opacity: 0; transform: translateX(48px); } to { opacity: 1; transform: translateX(0); } }
+            @keyframes slideInFromLeft  { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: translateX(0); } }
+            .slide-from-right { animation: slideInFromRight 0.28s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+            .slide-from-left  { animation: slideInFromLeft  0.28s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+          `}</style>
+
+          <div
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-brand-dark/95 backdrop-blur-lg"
+            onClick={(e) => { if (e.target === e.currentTarget) setSelectedProject(null); }}
           >
-
-            {/* ── Sticky header bar with close ── */}
-            <div className="flex items-center justify-between px-5 py-3 bg-[#07070a]/90 border-b border-white/10 flex-shrink-0 sm:hidden">
-              <span className="font-syne font-bold text-sm text-white truncate pr-4">{selectedProject.title}</span>
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex-shrink-0"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* ── Main image area (very tall) ── */}
-            <div className="relative w-full bg-black flex-shrink-0"
-              style={{ height: "55dvh", minHeight: "260px" }}
+            {/* Modal container: full-screen on mobile, capped on desktop */}
+            <div
+              className="glass w-full sm:max-w-4xl sm:w-[94vw] sm:rounded-3xl rounded-t-3xl overflow-hidden border border-white/10 flex flex-col shadow-2xl relative"
+              style={{ maxHeight: "100dvh", height: "100dvh" }}
             >
-              <Image
-                src={selectedProject.gallery ? selectedProject.gallery[activeImageIndex] : selectedProject.image}
-                alt={`${selectedProject.title} view ${activeImageIndex + 1}`}
-                fill
-                priority
-                className="object-contain transition-all duration-300"
-              />
-
-              {/* Close Button — desktop only */}
+              {/* ── Always-visible close button (top-right corner of modal) ── */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="hidden sm:flex absolute top-4 right-4 p-2.5 rounded-full bg-brand-dark/80 hover:bg-brand-dark text-white border border-white/10 hover:border-white/30 transition-colors cursor-pointer z-10 items-center justify-center"
+                className="absolute top-3 right-3 z-30 flex items-center justify-center p-2.5 rounded-full bg-black/70 hover:bg-black/90 text-white border border-white/20 hover:border-white/40 backdrop-blur-sm transition-all cursor-pointer shadow-lg"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Navigation Arrows */}
+              {/* ── Mobile sticky title bar (no close btn — handled above) ── */}
+              <div className="flex items-center px-5 py-3 pr-14 bg-[#07070a]/90 border-b border-white/10 flex-shrink-0 sm:hidden">
+                <span className="font-syne font-bold text-sm text-white truncate">{selectedProject.title}</span>
+              </div>
+
+              {/* ── Main image area with swipe support ── */}
+              <div
+                className="relative w-full bg-black flex-shrink-0 overflow-hidden"
+                style={{ height: "55dvh", minHeight: "260px" }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Keyed wrapper drives the slide-in animation on each image change */}
+                <div
+                  key={`${selectedProject.id}-${activeImageIndex}`}
+                  className={`absolute inset-0 ${ slideDir === "left" ? "slide-from-right" : "slide-from-left" }`}
+                >
+                  <Image
+                    src={selectedProject.gallery ? selectedProject.gallery[activeImageIndex] : selectedProject.image}
+                    alt={`${selectedProject.title} view ${activeImageIndex + 1}`}
+                    fill
+                    priority
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Navigation Arrows */}
+                {selectedProject.gallery && selectedProject.gallery.length > 1 && (
+                  <>
+                    <button
+                      onClick={goPrev}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/15 hover:border-white/30 transition-all cursor-pointer z-10 hover:scale-105 active:scale-95"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={goNext}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/15 hover:border-white/30 transition-all cursor-pointer z-10 hover:scale-105 active:scale-95"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+
+                    {/* Swipe hint — fades out after first interaction */}
+                    <span className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono bg-brand-dark/85 text-white border border-white/10 select-none pointer-events-none">
+                      {activeImageIndex + 1} / {selectedProject.gallery.length}
+                      <span className="text-gray-500 text-[10px] hidden sm:inline">· swipe or use arrows</span>
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {/* ── Thumbnail strip ── */}
               {selectedProject.gallery && selectedProject.gallery.length > 1 && (
-                <>
-                  <button
-                    onClick={() => setActiveImageIndex((prev) => (prev === 0 ? selectedProject.gallery!.length - 1 : prev - 1))}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/15 hover:border-white/30 transition-all cursor-pointer z-10 hover:scale-105 active:scale-95"
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={() => setActiveImageIndex((prev) => (prev === selectedProject.gallery!.length - 1 ? 0 : prev + 1))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-brand-dark/80 hover:bg-brand-dark/95 text-white border border-white/15 hover:border-white/30 transition-all cursor-pointer z-10 hover:scale-105 active:scale-95"
-                    aria-label="Next image"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-
-                  {/* Slide counter */}
-                  <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-mono bg-brand-dark/85 text-white border border-white/10">
-                    {activeImageIndex + 1} / {selectedProject.gallery.length}
-                  </span>
-                </>
+                <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none select-none bg-[#07070a] border-b border-white/5 flex-shrink-0">
+                  {selectedProject.gallery.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setSlideDir(idx > activeImageIndex ? "left" : "right");
+                        setActiveImageIndex(idx);
+                      }}
+                      className={`relative flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                        activeImageIndex === idx
+                          ? "border-brand-cyan shadow-md shadow-brand-cyan/20 scale-95"
+                          : "border-white/10 hover:border-white/30"
+                      }`}
+                      style={{ width: 64, height: 42 }}
+                    >
+                      <Image src={img} alt={`thumb ${idx + 1}`} fill className="object-cover" />
+                    </button>
+                  ))}
+                </div>
               )}
-            </div>
 
-            {/* ── Thumbnail strip ── */}
-            {selectedProject.gallery && selectedProject.gallery.length > 1 && (
-              <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none select-none bg-[#07070a] border-b border-white/5 flex-shrink-0">
-                {selectedProject.gallery.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`relative flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                      activeImageIndex === idx
-                        ? "border-brand-cyan shadow-md shadow-brand-cyan/20 scale-95"
-                        : "border-white/10 hover:border-white/30"
-                    }`}
-                    style={{ width: 64, height: 42 }}
-                  >
-                    <Image src={img} alt={`thumb ${idx + 1}`} fill className="object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* ── Scrollable info ── */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-5 md:p-8">
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan">
-                  {getIconForCategory(selectedProject.category)}
-                  {selectedProject.category}
-                </span>
-                <span className="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                  {selectedProject.client}
-                </span>
-                <span className="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                  {selectedProject.date}
-                </span>
-              </div>
-
-              {/* Title hidden on mobile (shown in sticky header) */}
-              <h3 className="hidden sm:block font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-                {selectedProject.title}
-              </h3>
-
-              <div className="border-t border-white/10 my-3" />
-
-              <h4 className="font-syne font-bold text-xs text-gray-300 uppercase tracking-widest mb-2">
-                Project Journey
-              </h4>
-              <p className="font-jakarta text-gray-400 text-sm leading-relaxed mb-5">
-                {selectedProject.story}
-              </p>
-
-              <h4 className="font-syne font-bold text-xs text-gray-300 uppercase tracking-widest mb-2">
-                Technical Blueprint
-              </h4>
-              <div className="flex flex-wrap gap-2 pb-4">
-                {selectedProject.stack.map((item) => (
-                  <span
-                    key={item}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-brand-purple/10 text-brand-cyan border border-brand-purple/20"
-                  >
-                    {item}
+              {/* ── Scrollable info ── */}
+              <div className="flex-1 overflow-y-auto overscroll-contain p-5 md:p-8">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan">
+                    {getIconForCategory(selectedProject.category)}
+                    {selectedProject.category}
                   </span>
-                ))}
+                  <span className="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                    {selectedProject.client}
+                  </span>
+                  <span className="text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                    {selectedProject.date}
+                  </span>
+                </div>
+
+                {/* Title — hidden on mobile (sticky header shows it) */}
+                <h3 className="hidden sm:block font-syne font-bold text-2xl md:text-3xl text-white mb-3">
+                  {selectedProject.title}
+                </h3>
+
+                <div className="border-t border-white/10 my-3" />
+
+                <h4 className="font-syne font-bold text-xs text-gray-300 uppercase tracking-widest mb-2">
+                  Project Journey
+                </h4>
+                <p className="font-jakarta text-gray-400 text-sm leading-relaxed mb-5">
+                  {selectedProject.story}
+                </p>
+
+                <h4 className="font-syne font-bold text-xs text-gray-300 uppercase tracking-widest mb-2">
+                  Technical Blueprint
+                </h4>
+                <div className="flex flex-wrap gap-2 pb-4">
+                  {selectedProject.stack.map((item) => (
+                    <span
+                      key={item}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-brand-purple/10 text-brand-cyan border border-brand-purple/20"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </section>
   );
